@@ -21,7 +21,7 @@
 /************************************************************************
  * function prototype declarations
  ************************************************************************/
-void handle_client(int client_socket);
+void *handle_client(void *client_socket);
 
 /************************************************************************
  * preprocessor directives

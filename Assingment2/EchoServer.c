@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     int server_socket;                 // descriptor of server socket
     struct sockaddr_in server_address; // for naming the server's listening socket
     int client_socket;
-    pthread = p_id;
+    pthread_t = pthread;
 
     // sent when ,client disconnected
     signal(SIGPIPE, SIG_IGN);
@@ -44,10 +44,11 @@ int main(int argc, char** argv) {
             perror("Error accepting client");
         } else {
             printf("\nAccepted client\n");
-            pthread_create(&p_id,NULL,handle_client,client_socket)
+            pthread_create(&pthread,NULL,handle_client,(void *)&client_socket);
+            printf("\nCreated pthread\n");
         }
-
-        pthread_detach(p_id);
+        printf("\n Detatching pthread");
+        pthread_detach(pthread);
     }
 }
 
@@ -56,9 +57,10 @@ int main(int argc, char** argv) {
  * handle client
  ************************************************************************/
 
-void handle_client(int client_socket) {
+void *handle_client(void *client_socket) {
     char input;
     int keep_going = TRUE;
+    int client_socket = (int *)client_socket;
     
     while (keep_going) {
         // read char from client
