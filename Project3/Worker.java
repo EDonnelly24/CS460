@@ -69,8 +69,8 @@ class Worker extends Thread implements HttpConstants {
          * before we fail with java.io.InterruptedIOException,
          * at which point we will abandon the connection.
          */
-        System.out.println("Waiting for input");
-
+        System.out.println("Number needed for algorithm");
+        is.read(buffer);
         int input = buffer[0];
         int num_steps = 0;
 
@@ -79,7 +79,7 @@ class Worker extends Thread implements HttpConstants {
             num_steps++;
             if(input % 2 == 0)
             {
-                input/=2;
+                input = input/2;
             }
             else
             {
@@ -87,101 +87,9 @@ class Worker extends Thread implements HttpConstants {
             }
         }
         System.out.println("The Number of steps is: " + num_steps);
-        //socket.setSoTimeout(webServer.timeout);
-        //socket.setTcpNoDelay(true);
-        /* zero out the buffer from last time */
-        for (int i = 0; i < BUF_SIZE; i++) {
-            buffer[i] = 0;
-        }
-        try {
-            /* We only support HTTP GET/HEAD, and don't
-             * support any fancy HTTP options,
-             * so we're only interested really in
-             * the first line.
-             */
-            int nread = 0, r = 0;
-
-            outerloop:
-            while (nread < BUF_SIZE) {
-                r = is.read(buffer, nread, BUF_SIZE - nread);
-                if (r == -1) {
-                    /* EOF */
-                    return;
-                }
-                int i = nread;
-                nread += r;
-                for (; i < nread; i++) {
-                    if (buffer[i] == (byte) '\n' || buffer[i] == (byte) '\r') {
-                        /* read one line */
-                        break outerloop;
-                    }
-                }
-            }
-
-            /* are we doing a GET or just a HEAD */
-            boolean doingGet;
-            /* beginning of file name */
-            int index;
-            if (buffer[0] == (byte) 'G'
-                    && buffer[1] == (byte) 'E'
-                    && buffer[2] == (byte) 'T'
-                    && buffer[3] == (byte) ' ') {
-                doingGet = true;
-                index = 4;
-            } else if (buffer[0] == (byte) 'H'
-                    && buffer[1] == (byte) 'E'
-                    && buffer[2] == (byte) 'A'
-                    && buffer[3] == (byte) 'D'
-                    && buffer[4] == (byte) ' ') {
-                doingGet = false;
-                index = 5;
-            } else {
-                /* we don't support this method */
-                ps.print("HTTP/1.0 " + HTTP_BAD_METHOD
-                        + " unsupported method type: ");
-                ps.write(buffer, 0, 5);
-                ps.write(EOL);
-                ps.flush();
-                socket.close();
-                return;
-            }
-
-            int i = 0;
-            /* find the file name, from:
-             * GET /foo/bar.html HTTP/1.0
-             * extract "/foo/bar.html"
-             */
-            for (i = index; i < nread; i++) {
-                if (buffer[i] == (byte) ' ') {
-                    break;
-                }
-            }
-            String fname = (new String(buffer, 0, index,
-                    i - index)).replace('/', File.separatorChar);
-            if (fname.startsWith(File.separator)) {
-                fname = fname.substring(1);
-            }
-
-            File targ = new File(webServer.root, fname);
-            webServer.print("" + targ);
-
-            if (targ.isDirectory()) {
-                File ind = new File(targ, "index.html");
-                if (ind.exists()) {
-                    targ = ind;
-                }
-            }
-            boolean OK = printHeaders(targ, ps);
-            if (doingGet) {
-                if (OK) {
-                    sendFile(targ, ps);
-                } else {
-                    send404(targ, ps);
-                }
-            }
-        } finally {
-            socket.close();
-        }
+        ps.write(num_steps);
+        socket.close();
+        
     }
 
     boolean printHeaders(File targ, PrintStream ps) throws IOException {
