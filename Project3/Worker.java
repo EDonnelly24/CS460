@@ -1,5 +1,4 @@
-package web;
-
+package webb;
 
 import java.io.*;
 import java.net.*;
@@ -70,8 +69,26 @@ class Worker extends Thread implements HttpConstants {
          * before we fail with java.io.InterruptedIOException,
          * at which point we will abandon the connection.
          */
-        socket.setSoTimeout(webServer.timeout);
-        socket.setTcpNoDelay(true);
+        System.out.println("Waiting for input");
+
+        int input = buffer[0];
+        int num_steps = 0;
+
+        while(input != 1)
+        {
+            num_steps++;
+            if(input % 2 == 0)
+            {
+                input/=2;
+            }
+            else
+            {
+                input = (input*3) + 1;
+            }
+        }
+        System.out.println("The Number of steps is: " + num_steps);
+        //socket.setSoTimeout(webServer.timeout);
+        //socket.setTcpNoDelay(true);
         /* zero out the buffer from last time */
         for (int i = 0; i < BUF_SIZE; i++) {
             buffer[i] = 0;

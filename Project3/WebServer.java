@@ -1,4 +1,4 @@
-package web;
+package webb;
 
 import java.io.*;
 import java.net.*;
@@ -103,29 +103,29 @@ class WebServer {
 
         /* start worker threads */
         for (int i = 0; i < workers; ++i) {
-            Worker w = new Worker(this, "worker #" + i);
+            Worker worker = new Worker(this, "worker #" + i);
             wait();
-            threads.addElement(w);
+            threads.addElement(worker);
         }
 
 
         ServerSocket ss = new ServerSocket(port);
-        Worker w = null;
+        Worker worker = null;
 
         print("Start server loop");
         while (true) {
 
-            Socket s = ss.accept();
+            Socket clientSocket = ss.accept();
 
             synchronized (threads) {
                 if (threads.isEmpty()) {
-                    w = new Worker(this, "additional worker");
+                    worker = new Worker(this, "additional worker");
                     wait();
-                    w.setSocket(s);
+                    worker.setSocket(clientSocket);
                 } else {
-                    w = (Worker) threads.elementAt(0);
+                    worker = (Worker) threads.elementAt(0);
                     threads.removeElementAt(0);
-                    w.setSocket(s);
+                    worker.setSocket(clientSocket);
                 }
             }
         }
