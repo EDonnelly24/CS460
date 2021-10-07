@@ -4,12 +4,12 @@
  * MAIN
  ************************************************************************/
 int main() {
-    char input[100];                    // buffer for user input
+    int input;                    // buffer for user input
     int client_socket;                  // client side socket
     struct sockaddr_in client_address;  // client socket naming struct
-    char c;
     
-    printf("Echo client\n");
+    
+    printf("\n 3A + 1 Client");
     
     // create an unnamed socket, and then name it
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -24,10 +24,15 @@ int main() {
         exit(EXIT_FAILURE);
     }
     
-    while (TRUE) {
-        printf("Input: ");
+    
+        printf("\nInput: ");
+
+        scanf("%d", &input);
+
+        write(client_socket,&input, sizeof(int));
         
-    }
+        
+    
     
     return EXIT_SUCCESS;
 }
