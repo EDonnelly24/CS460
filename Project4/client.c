@@ -4,6 +4,8 @@
 /* ******************************************************* */
 /* main()                                                  */
 /* ******************************************************* */
+pthread_mutex_t lock;
+struct sockaddr_in client_address
 int main() {
     
     // task counter, also serves as argument to 3A+1 algorithm
@@ -26,22 +28,7 @@ int main() {
     exit(EXIT_SUCCESS);
 }
 
-
-/* ******************************************************* */
-/* three_a_plus_one_wrapper()                              */
-/* ******************************************************* */
-void three_a_plus_one_wrapper(void *number_ptr)
-{
-    int number = *((int*)number_ptr);
-    
-    printf("\nthread ID %p ----> %d: %d", pthread_self(), number, three_a_plus_one_rec(number));
-}
-
-
-/* ******************************************************* */
-/* three_a_plus_one() - nonrecursive                       */
-/* ******************************************************* */
-int three_a_plus_one(int input)
+int three_a_plus_one_rec(int input)
 {
     int counter = 0;
     int current = input;
@@ -59,24 +46,14 @@ int three_a_plus_one(int input)
     return counter;
 }
 
-
 /* ******************************************************* */
-/* three_a_plus_one_rec() - recursive                          */
+/* three_a_plus_one_wrapper()                              */
 /* ******************************************************* */
-int three_a_plus_one_rec(int number) {
-    int new_number;
+void three_a_plus_one_wrapper(void *number_ptr)
+{
+    int number = *((int*)number_ptr);
     
-    if (number == 1) {
-        return 0;
-    }
-    
-    if (number % 2) {
-        new_number = 3 * number + 1;
-    } else {
-        new_number = number / 2;
-    }
-    
-    return 1 + three_a_plus_one(new_number);
+    printf("\nthread ID %p ----> %d: %d", pthread_self(), number, three_a_plus_one_rec(number));
 }
 
 
