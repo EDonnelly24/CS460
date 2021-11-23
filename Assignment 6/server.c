@@ -9,28 +9,39 @@ void error(const char *msg)
 
 int main(int argc, char **argv)
 {
-    int sockfd, newsockfd, n;
-    char buffer[255];
-
-    struct sockaddr_in serv_addr , cli_addr;
-    socklen_t clilen;
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd < 0)
-    {
-        error("Error opening socket.");
-    }
-
-    bzero((char *) &serv_addr , sizeof(serv_addr));
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(PORT);
-
-    if(bind(sockfd , (struct sockaddr *) &serv_addr , sizeof(serv_addr)) < 0)
-    {
-        error("Binding Failed.");
-    }
+    int main()
+{
+	char buffer[255] = {0};
+	struct sockaddr_in serv_addr = {0};
+	struct sockaddr_in client_addr = {0};
+        
+	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if(sockfd == -1)
+	{
+		perror("failed to create socket");
+		exit(EXIT_FAILURE);
+	}
+	
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(PORT);
+	servaddr.sin_addr.s_addr = INADDR_ANY;
+	
+	int rc = bind(sockfd, (const struct sockaddr *)&serv_addr, 
+		sizeof(serv_addr));
+		
+	if(rc == -1)
+	{
+		perror("failed to bind");
+		close(sockfd);
+		exit(EXIT_FAILURE);
+	}
+	socklen_t clilen = 0;
+	
+	int n = recvfrom(sockfd, (char *)buffer, 255, MSG_WAITALL,
+		0, &clilen);
+        
+	buffer[n] = '\n';
+	printf("%s", buffer);
 
     listen(sockfd , 7);
     clilen = sizeof(cli_addr);
